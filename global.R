@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyjs)
+library(plyr)
 library(dplyr)
 library(shinythemes)
 library(shinydashboard)
@@ -11,7 +12,6 @@ library(ggplot2)
 library(purrr)
 library(plotly)
 library(waiter)
-library(plyr)
 
 #########global
 use_condaenv('synapse', required = TRUE)

@@ -8,6 +8,7 @@ server <- function(input, output, session) {
 
   submission_viewdf <- NULL
   projects_namedlist <- c()
+  # challenge_viewdf <- NULL
   # proj_folder_manifest_cells <- c()
   #
   # folder_synID <- NULL
@@ -60,38 +61,66 @@ server <- function(input, output, session) {
     })
   })
 
-  observeEvent(ignoreNULL = TRUE, ignoreInit = TRUE, input$challenges, {
-    output$queue_participation = renderPlotly({
-      selected_project <- input$challenges
-      # if selected_project not empty
-      if (!is.null(selected_project)) {
-        project_synid <- projects_namedlist[[selected_project]] ### get synID of selected project
-        challenge_viewdf <<- syn_tableQuery(
-          glue::glue("select * from syn22252115 ",
-                     "where projectId = '{project_synid}'")
-        )$asDataFrame()
-        evalnames = c()
-        for (evaluation in unique(challenge_viewdf$evaluationid)) {
-          evalnames = c(evalnames, syn_getEvaluation(evaluation)$name)
-        }
-        evaluation_names = plyr::mapvalues(challenge_viewdf$evaluationid,
-                                           from=unique(challenge_viewdf$evaluationid),
-                                           to=evalnames)
-        submission_dist = sort(table(evaluation_names), decreasing = T)
-        submission_dist = as.data.frame(submission_dist)
-        x <- list(
-          title = "Queues",
-          showticklabels=F
-        )
-        y <- list(
-          title = "Number of Submissions"
-        )
-        plot_ly(data = submission_dist,
-                x = ~evaluation_names,
-                y = ~Freq,
-                name = "Submissions per queue",
-                type = "bar") %>% layout(xaxis = x, yaxis = y)
+  challenge_view <- eventReactive(input$challenges, {
+    selected_project <- input$challenges
+    # if selected_project not empty
+    if (!is.null(selected_project) && selected_project != "") {
+      project_synid <- projects_namedlist[[selected_project]] ### get synID of selected project
+      challenge_viewdf <<- syn_tableQuery(
+        glue::glue("select * from syn22252115 ",
+                   "where projectId = '{project_synid}'")
+      )$asDataFrame()
+      evalnames = c()
+      for (evaluation in unique(challenge_viewdf$evaluationid)) {
+        evalnames = c(evalnames, syn_getEvaluation(evaluation)$name)
       }
+      evaluation_names = plyr::mapvalues(challenge_viewdf$evaluationid,
+                                         from=unique(challenge_viewdf$evaluationid),
+                                         to=evalnames)
+      challenge_viewdf$evaluation_name = evaluation_names
+      challenge_viewdf
+    } else {
+      return(NULL)
+    }
+  })
+
+  observeEvent(ignoreNULL = TRUE, ignoreInit = TRUE, challenge_view(), {
+    output$queue_submissions = renderPlotly({
+      challenge_viewdf <- challenge_view()
+      evaluation_names <- challenge_viewdf$evaluation_name
+      submission_dist = sort(table(evaluation_names), decreasing = T)
+      submission_dist = as.data.frame(submission_dist)
+      x <- list(
+        title = "Queues",
+        showticklabels=F
+      )
+      y <- list(
+        title = "Number of Submissions"
+      )
+      plot_ly(data = submission_dist,
+              x = ~evaluation_names,
+              y = ~Freq,
+              name = "Submissions per queue",
+              type = "bar") %>% layout(xaxis = x, yaxis = y)
+    })
+
+    output$queue_submitters = renderPlotly({
+      challenge_viewdf <- challenge_view()
+      unique_submitters = challenge_viewdf %>%
+        group_by(evaluation_name) %>%
+        summarise(count = n_distinct(submitterid))
+      x <- list(
+        title = "Queues",
+        showticklabels=F
+      )
+      y <- list(
+        title = "Number of Submitters"
+      )
+      plot_ly(data = unique_submitters,
+              x = ~evaluation_name,
+              y = ~count,
+              name = "Unique submitters per queue",
+              type = "bar") %>% layout(xaxis = x, yaxis = y)
     })
   })
 

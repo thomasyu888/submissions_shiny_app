@@ -70,7 +70,6 @@ server <- function(input, output, session) {
           glue::glue("select * from syn22252115 ",
                      "where projectId = '{project_synid}'")
         )$asDataFrame()
-        # DT::datatable(challenge_viewdf)
         evalnames = c()
         for (evaluation in unique(challenge_viewdf$evaluationid)) {
           evalnames = c(evalnames, syn_getEvaluation(evaluation)$name)

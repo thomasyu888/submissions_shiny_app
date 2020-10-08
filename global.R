@@ -17,4 +17,4 @@ library(plyr)
 use_condaenv('synapse', required = TRUE)
 reticulate::import("sys")
 
-source_python("syn_login_func")
+source_python("syn_login_func.py")

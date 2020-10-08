@@ -44,7 +44,6 @@ ui <- dashboardPage(
           ),
           box(
             solidHeader = TRUE,
-            height = 30,
             width = 10,
             title = "Number of Submissions",
             plotlyOutput('queue_participation')

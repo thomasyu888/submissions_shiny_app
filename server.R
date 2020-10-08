@@ -80,7 +80,8 @@ server <- function(input, output, session) {
         submission_dist = sort(table(evaluation_names), decreasing = T)
         submission_dist = as.data.frame(submission_dist)
         x <- list(
-          title = "Queues"
+          title = "Queues",
+          showticklabels=F
         )
         y <- list(
           title = "Number of Submissions"

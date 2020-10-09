@@ -46,13 +46,13 @@ ui <- dashboardPage(
             solidHeader = TRUE,
             width = 10,
             title = "Number of Submissions",
-            plotlyOutput('queue_submissions')
+            plotlyOutput('queue_submissions_query')
           ),
           box(
             solidHeader = TRUE,
             width = 10,
             title = "Number of Submitters",
-            plotlyOutput('queue_submitters')
+            plotlyOutput('queue_submitters_query')
           )
         )
       )

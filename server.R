@@ -151,6 +151,13 @@ server <- function(input, output, session) {
               type = "bar") %>% layout(xaxis = x, yaxis = y)
     })
 
+    output$registered_users <- renderText({
+      challenge = syn_restGET(glue::glue("/entity/{project_synid}/challenge"))
+      challengeid = challenge$id
+      participants = syn_restGET(glue::glue("/challenge/{challengeid}/participant"))
+      paste("Number of registered users:", participants$totalNumberOfResults)
+    })
+
     output$queue_submitters_query = renderPlotly({
 
       querydf <- syn_tableQuery(

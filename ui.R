@@ -52,6 +52,7 @@ ui <- dashboardPage(
             solidHeader = TRUE,
             width = 10,
             title = "Number of Submitters",
+            textOutput("registered_users"),
             plotlyOutput('queue_submitters_query')
           )
         )

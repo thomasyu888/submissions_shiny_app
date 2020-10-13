@@ -6,3 +6,4 @@ syn_getUserProfile = syn.getUserProfile
 syn_tableQuery = syn.tableQuery
 syn_get = syn.get
 syn_getEvaluation = syn.getEvaluation
+syn_restGET = syn.restGET
